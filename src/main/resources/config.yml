@@ -1,0 +1,26 @@
+# ============================================
+#              DayShulkers - Config
+# ============================================
+# Colores: puedes usar & normal (&a, &c, &l, etc.)
+# Hex simple: &#RRGGBB (ej: &#00DAFF)
+# Degradado letra por letra: &x&R&R&G&G&B&B (uno por cada letra)
+#   Ejemplo de degradado ya armado:
+#   &x&0&0&D&A&F&F&lF&x&1&4&D&E&F&F&lU&x&2&8&E&2&F&F&lL&x&3&C&E&6&F&F&lL
+# ============================================
+
+open-shulker:
+  title: "&x&0&0&D&A&F&F&lD&x&1&4&D&E&F&F&laY&x&2&8&E&2&F&F&lS&x&3&C&E&6&F&F&lH&x&5&0&E&9&F&F&lU&x&6&4&E&D&F&F&lL&x&7&8&F&1&F&F&lK&x&8&C&F&5&F&F&lE&x&A&0&F&9&F&F&lR&x&B&4&F&D&F&F&lS"
+  subtitle: "&#00DAFF&lAbriste tu Shulker"
+  message: "&#00DAFF&l[!] &fAbriste tu Shulker"
+  sound: BLOCK_SHULKER_BOX_OPEN
+
+close-shulker:
+  title: "&x&0&0&D&A&F&F&lD&x&1&4&D&E&F&F&laY&x&2&8&E&2&F&F&lS&x&3&C&E&6&F&F&lH&x&5&0&E&9&F&F&lU&x&6&4&E&D&F&F&lL&x&7&8&F&1&F&F&lK&x&8&C&F&5&F&F&lE&x&A&0&F&9&F&F&lR&x&B&4&F&D&F&F&lS"
+  subtitle: "&c&lCerraste tu Shulker"
+  message: "&c&l[!] &fCerraste tu Shulker"
+  sound: BLOCK_SHULKER_BOX_CLOSE
+
+# Tiempos del título en ticks (20 ticks = 1 segundo)
+title-fade-in: 10
+title-stay: 40
+title-fade-out: 10
