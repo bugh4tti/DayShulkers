@@ -2,8 +2,10 @@ package com.dayshulkers.listeners;
 
 import com.dayshulkers.DayShulkers;
 import com.dayshulkers.utils.ColorUtils;
+import org.bukkit.FluidCollisionMode;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.block.Block;
 import org.bukkit.block.ShulkerBox;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -12,6 +14,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.player.PlayerAnimationEvent;
+import org.bukkit.event.player.PlayerAnimationType;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
@@ -25,6 +29,8 @@ public class ShulkerListener implements Listener {
 
     private final DayShulkers plugin;
     private final Map<UUID, Session> openSessions = new HashMap<>();
+    // Evita que un mismo click dispare la apertura dos veces (interact + swing)
+    private final Map<UUID, Long> lastTrigger = new HashMap<>();
 
     public ShulkerListener(DayShulkers plugin) {
         this.plugin = plugin;
@@ -51,11 +57,7 @@ public class ShulkerListener implements Listener {
             return;
         }
 
-        if (!(item.getItemMeta() instanceof BlockStateMeta meta)) {
-            return;
-        }
-
-        if (!(meta.getBlockState() instanceof ShulkerBox)) {
+        if (!(item.getItemMeta() instanceof BlockStateMeta meta) || !(meta.getBlockState() instanceof ShulkerBox)) {
             return;
         }
 
@@ -64,7 +66,60 @@ public class ShulkerListener implements Listener {
         event.setUseItemInHand(Event.Result.DENY);
         event.setUseInteractedBlock(Event.Result.DENY);
 
+        if (!canTrigger(player)) {
+            return;
+        }
+
         openShulker(player, item);
+    }
+
+    /**
+     * Cuando el jugador mira al cielo (sin ningún bloque cerca), Minecraft no
+     * siempre manda el paquete de "usar item" con un bloque objetivo, así que
+     * PlayerInteractEvent puede no dispararse. El swing del brazo sí se manda
+     * siempre, así que lo usamos como respaldo para ese caso puntual.
+     */
+    @EventHandler(ignoreCancelled = true)
+    public void onSwing(PlayerAnimationEvent event) {
+        if (event.getAnimationType() != PlayerAnimationType.ARM_SWING) {
+            return;
+        }
+
+        Player player = event.getPlayer();
+        if (!player.hasPermission("dayshulkers.use")) {
+            return;
+        }
+
+        ItemStack item = player.getInventory().getItemInMainHand();
+        if (!isShulkerBox(item.getType())) {
+            return;
+        }
+
+        // Si está mirando un bloque cercano, ese caso ya lo maneja onInteract.
+        Block target = player.getTargetBlockExact(6, FluidCollisionMode.NEVER);
+        if (target != null && target.getType() != Material.AIR) {
+            return;
+        }
+
+        if (!(item.getItemMeta() instanceof BlockStateMeta meta) || !(meta.getBlockState() instanceof ShulkerBox)) {
+            return;
+        }
+
+        if (!canTrigger(player)) {
+            return;
+        }
+
+        openShulker(player, item);
+    }
+
+    private boolean canTrigger(Player player) {
+        long now = System.currentTimeMillis();
+        Long last = lastTrigger.get(player.getUniqueId());
+        if (last != null && now - last < 200) {
+            return false;
+        }
+        lastTrigger.put(player.getUniqueId(), now);
+        return true;
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -171,4 +226,4 @@ public class ShulkerListener implements Listener {
             this.shulkerBox = shulkerBox;
         }
     }
-          }
+            }
