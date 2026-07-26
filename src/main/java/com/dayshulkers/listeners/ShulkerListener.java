@@ -30,8 +30,11 @@ public class ShulkerListener implements Listener {
         this.plugin = plugin;
     }
 
-    // Cubre tanto click derecho sobre un bloque (RIGHT_CLICK_BLOCK) como
-    // click derecho mirando al cielo / sin nada en frente (RIGHT_CLICK_AIR).
+    // Click derecho sobre un bloque (RIGHT_CLICK_BLOCK) o mirando al cielo/aire
+    // (RIGHT_CLICK_AIR) abre la shulker. Además, click izquierdo cuando no hay
+    // nada al frente (LEFT_CLICK_AIR) también la abre: es la única forma
+    // confiable de detectar "mirar al cielo", ya que el click derecho ahí no
+    // manda ningún aviso al servidor en Minecraft.
     @EventHandler(ignoreCancelled = true)
     public void onInteract(PlayerInteractEvent event) {
         if (event.getHand() != EquipmentSlot.HAND) {
@@ -39,7 +42,10 @@ public class ShulkerListener implements Listener {
         }
 
         Action action = event.getAction();
-        if (action != Action.RIGHT_CLICK_BLOCK && action != Action.RIGHT_CLICK_AIR) {
+        boolean isRightClick = action == Action.RIGHT_CLICK_BLOCK || action == Action.RIGHT_CLICK_AIR;
+        boolean isLeftClickAir = action == Action.LEFT_CLICK_AIR;
+
+        if (!isRightClick && !isLeftClickAir) {
             return;
         }
 
@@ -169,4 +175,4 @@ public class ShulkerListener implements Listener {
             this.shulkerBox = shulkerBox;
         }
     }
-        }
+                                         }
