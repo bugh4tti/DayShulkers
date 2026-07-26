@@ -1,0 +1,20 @@
+name: DayShulkers
+main: com.dayshulkers.DayShulkers
+version: '1.0.0'
+api-version: '1.20'
+author: Bughatti
+description: Abre tus Shulkers directamente al colocarlas, sin necesidad de ponerlas en el suelo. Mensajes, títulos y degradados configurables.
+
+commands:
+  dayshulkers:
+    description: Comando principal de DayShulkers
+    aliases: [ds, dayshulker]
+    usage: /<command> [reload|help]
+
+permissions:
+  dayshulkers.reload:
+    description: Permite recargar la configuración del plugin
+    default: op
+  dayshulkers.use:
+    description: Permite abrir shulkers portátiles sin colocarlas
+    default: true
